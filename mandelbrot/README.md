@@ -5,4 +5,4 @@ Create your own mandelbrot set image (```.ppm``` format) with:
 $ sh build.sh
 ```
 Be creative and try your own colourings.
-![mandelbrot](mandelbrot.ppm)
+![mandelbrot](sample.png)
