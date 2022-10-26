@@ -5,10 +5,10 @@ const HEIGHT: i32 = 612;
 const WIDTH: i32 = 612;
 const MAX_CCV: i32 = 255;
 const MAX_ITER: i32 = 100;
-const UPPER_REAL: i32 = 1;
-const LOW_REAL: i32 = -2;
-const UPPER_IMAG: i32 = 1;
-const LOW_IMAG: i32 = -1;
+const UPPER_REAL: f32 = 0.5;
+const LOW_REAL: f32 = -2.0;
+const UPPER_IMAG: f32 = 1.0;
+const LOW_IMAG: f32 = -1.0;
 
 #[derive(Copy, Clone)]
 struct Complex {
@@ -68,6 +68,22 @@ fn mandelbrot(c: Complex) -> i32 {
     iteration
 }
 
+fn generic_colouring(iters: i32) -> [i32; 3] {
+    let mut rgb = [0; 3];
+    for component in rgb.iter_mut() {
+        *component = 255 - iters * ((255 as f64) / (MAX_ITER as f64)) as i32; 
+    }
+    rgb
+}
+
+fn cool_colouring(iters: i32) -> [i32; 3] {
+    let mut rgb = [0; 3];
+    rgb[0] = f64::cos(iters.into()) as i32 % MAX_CCV;
+    rgb[1] = iters * iters % MAX_CCV;
+    rgb[2] = iters % MAX_CCV;
+    rgb
+}
+
 fn main() -> std::io::Result<()> {
     let mut fractal = File::create("mandelbrot.ppm")?;
     fractal.write_all(format!("P3\n {} {}\n {}\n", HEIGHT, WIDTH, MAX_CCV).as_bytes())?;
@@ -79,8 +95,8 @@ fn main() -> std::io::Result<()> {
                 LOW_IMAG as f64 + (j as f64 / HEIGHT as f64) * (UPPER_IMAG - LOW_IMAG) as f64
             );
             let iters = mandelbrot(point);
-            let color = 255 - iters * ((255 as f64) / (MAX_ITER as f64)) as i32;
-            fractal.write_all(format!("{0} {0} {0} ", color).as_bytes())?;
+            let rgb = cool_colouring(iters);
+            fractal.write_all(format!("{0} {1} {2} ", rgb[0], rgb[1], rgb[2]).as_bytes())?;
         }
     }
     Ok(())
