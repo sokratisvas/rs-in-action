@@ -1,8 +1,8 @@
 use std::fs::File;
 use std::io::prelude::*;
 
-const HEIGHT: i32 = 612;
-const WIDTH: i32 = 612;
+const HEIGHT: i32 = 512;
+const WIDTH: i32 = 512;
 const MAX_CCV: i32 = 255;
 const MAX_ITER: i32 = 100;
 const UPPER_REAL: f32 = 0.5;
@@ -68,6 +68,7 @@ fn mandelbrot(c: Complex) -> i32 {
     iteration
 }
 
+#[allow(dead_code)]
 fn generic_colouring(iters: i32) -> [i32; 3] {
     let mut rgb = [0; 3];
     for component in rgb.iter_mut() {
@@ -76,6 +77,7 @@ fn generic_colouring(iters: i32) -> [i32; 3] {
     rgb
 }
 
+#[allow(dead_code)]
 fn cool_colouring(iters: i32) -> [i32; 3] {
     let mut rgb = [0; 3];
     rgb[0] = f64::cos(iters.into()) as i32 % MAX_CCV;
