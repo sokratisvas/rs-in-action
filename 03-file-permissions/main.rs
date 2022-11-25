@@ -1,3 +1,4 @@
+use std::io;
 use std::os::linux::fs::MetadataExt;
 
 const S_IFDIR: u32 = 0o040000;
@@ -57,18 +58,43 @@ fn filemode(st_mode: u32) {
     for owner in 1..=3 {
         let curr = match owner {
             1 => "User",
-            2 => "Groups",
+            2 => "Group",
             3 => "Other",
             _ => "no way"
         };
         let beaut = beautify_rwx(unix_name[owner]);
-        println!("{}: {}", curr, beaut);
+        
+        // I wont use cargo just for a color crate
+        println!("{}: \x1b[1;32m{}\x1b[0m", curr, beaut);
     }
 
 }
 
 fn main() -> std::io::Result<()> {
-    let meta = std::fs::metadata("file")?;
+    println!("Enter filename > ");
+    let mut file = String::new();
+    let mut stdin = io::stdin();
+    stdin.read_line(&mut file)?;
+
+    while file.split(" ").count() != 1 {
+        println!("Enter filename > ");
+        file.clear();
+        stdin = io::stdin();
+        stdin.read_line(&mut file)?;
+        //println!("{}", file.split(" ").count());
+    }
+
+    if file.ends_with("\n") {
+        file.pop();
+    }
+
+    let meta = match std::fs::metadata(&file) {
+        Ok(meta) => meta,
+        Err(err) => {
+            println!("Error: {} is not a valid filename", &file);
+            return Err(err);
+        },
+    };
     filemode(meta.st_mode());
     Ok(())
 }
